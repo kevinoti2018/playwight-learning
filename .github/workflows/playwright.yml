@@ -1,0 +1,50 @@
+name: Playwright Tests
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment:
+          - name: qa
+            base_url: https://www.saucedemo.com/
+            test_user: standard_user
+          - name: staging
+            base_url: https://www.saucedemo.com/
+            test_user: locked_out_user
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+    - name: Run Playwright tests
+      env:
+        TEST_ENV: ${{ matrix.environment.name }}
+        BASE_URL: ${{ matrix.environment.base_url }}
+        # TEST_USER is kept here as plain matrix config, not a GitHub secret.
+        # Trade-off: standard_user / locked_out_user are Sauce Demo's own
+        # published, public test-account names (documented on their site),
+        # not credentials that grant real access. Secreting them would add
+        # no real protection while making the workflow harder to read.
+        # In a real production suite, this line should NOT be trusted as
+        # a template — real usernames (admin accounts, service accounts,
+        # anything that narrows an attacker's search space) belong in
+        # secrets alongside the password, e.g. secrets.QA_TEST_USER.
+        TEST_USER: ${{ matrix.environment.test_user }}
+        TEST_PWD: ${{ secrets.TEST_PWD }}
+      run: npx playwright test
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: playwright-report-${{ matrix.environment.name }}
+        path: playwright-report/
+        retention-days: 30
