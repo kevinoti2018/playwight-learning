@@ -2,7 +2,7 @@ import { test, expect } from "../fixtures/page-fixtures";
 
 test.describe('Cart page tescases', () => {
   test('users can go to cart page', async ({ cartPage,inventoryPage }) => {
-    await cartPage.goto()
+    await inventoryPage.goto()
     await cartPage.addToCart('Sauce Labs Backpack')
     await cartPage.gotoCart()
     await expect(cartPage.page).toHaveURL('/cart.html');

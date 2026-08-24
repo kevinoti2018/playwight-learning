@@ -1,4 +1,4 @@
-import { Page, Locator } from "@playwright/test";
+import { Page, Locator ,expect} from "@playwright/test";
 
 export class InventoryPage {
   readonly page: Page;
@@ -19,23 +19,18 @@ export class InventoryPage {
 
   async goto() {
     await this.page.goto('/inventory.html', {
-      waitUntil: 'domcontentloaded',
+      waitUntil: 'load'
     });
   }
 
   private getItemCardByName(itemName: string): Locator {
     return this.inventoryItems.filter({ hasText: itemName });
   }
-  private getItemSlug(itemName: string): string {
-    return itemName
-      .toLowerCase()
-      .replace(/\s+/g, '-');
-  }
 
   async addItemToCart(itemName: string) {
     const card = this.getItemCardByName(itemName);
 
-    await card.getByRole("button", { name: /add to cart/i }).click();
+    await card.getByRole("button", { name: /Add to cart/i }).click();
   }
 
   async removeItemFromCart(itemName: string) {
@@ -47,6 +42,7 @@ export class InventoryPage {
   }
 
   async sortProductsBy(option: "az" | "za" | "lohi" | "hilo") {
+    await expect(this.sortDropdown).toBeVisible();
     await this.sortDropdown.selectOption(option);
   }
 }
