@@ -1,5 +1,6 @@
 import { Page, Locator } from "@playwright/test";
 import { CartPage } from "./CartPage";
+import { ChekoutInfo } from "../factories/CheckoutInfoBuilder";
 export class CheckoutPage{
   readonly page: Page
   readonly cartPage: CartPage
@@ -38,10 +39,10 @@ export class CheckoutPage{
 
   }
 
-  async checkoutItems(firstName:string, lastName:string,zip:string) {
-    await this.firstName.fill(firstName)
-    await this.lastName.fill(lastName)
-    await this.zip.fill(zip)
+  async checkoutItems(info: ChekoutInfo) {
+    await this.firstName.fill(info.firstName)
+    await this.lastName.fill(info.lastName)
+    await this.zip.fill(info.zip)
     await this.continue.click()
   }
 

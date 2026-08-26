@@ -1,3 +1,4 @@
+import { CheckoutInfoBuilder } from "../factories/CheckoutInfoBuilder";
 import { test, expect } from "../fixtures/page-fixtures";
 
 test.describe('checkout page', () => {
@@ -6,6 +7,7 @@ test.describe('checkout page', () => {
     checkoutPage,
     inventoryPage
   }) => {
+
     await inventoryPage.goto()
 
     await cartPage.addToCart('Sauce Labs Backpack')
@@ -13,12 +15,12 @@ test.describe('checkout page', () => {
     await cartPage.gotoCart()
 
     await cartPage.checkOutItems()
-
-    await checkoutPage.checkoutItems(
-      'Kevin',
-      'Otieno',
-      '00100'
-    )
+    const info = new CheckoutInfoBuilder()
+       .withFirstName('Kevin')
+       .withLastName('Otieno')
+       .withZip('00100')
+       .build()
+     await checkoutPage.checkoutItems(info)
 
     await expect(checkoutPage.title)
       .toContainText('Checkout: Overview')
@@ -42,11 +44,12 @@ test.describe('checkout page', () => {
 
     await cartPage.checkOutItems()
 
-    await checkoutPage.checkoutItems(
-      'Kevin',
-      'Otieno',
-      '00100'
-    )
+    const info = new CheckoutInfoBuilder()
+       .withFirstName('Kevin')
+       .withLastName('Otieno')
+       .withZip('00100')
+       .build()
+     await checkoutPage.checkoutItems(info)
     await checkoutPage.cancel.click()
     await expect(checkoutPage.title)
       .toContainText('Products')
@@ -66,12 +69,8 @@ test.describe('checkout page', () => {
     await cartPage.gotoCart()
 
     await cartPage.checkOutItems()
-
-    await checkoutPage.checkoutItems(
-      'Kevin',
-      'Otieno',
-      '00100'
-    )
+    const info = new CheckoutInfoBuilder().build()
+     await checkoutPage.checkoutItems(info)
     await checkoutPage.finish.click()
     await expect(cartPage.page).toHaveURL('/checkout-complete.html');
     await expect(checkoutPage.title).toContainText('Checkout: Complete!')

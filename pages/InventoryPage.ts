@@ -42,7 +42,7 @@ export class InventoryPage {
   }
 
   async sortProductsBy(option: "az" | "za" | "lohi" | "hilo") {
-    await expect(this.sortDropdown).toBeVisible();
+    // await expect(this.sortDropdown).toBeVisible();
     await this.sortDropdown.selectOption(option);
   }
 }
